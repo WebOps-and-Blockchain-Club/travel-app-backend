@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
+import express, { Request, Response } from "express";
 import { prisma } from "..";
 
 const router = Router();
@@ -26,8 +27,21 @@ export const verifyToken = (req: any, res: any, next: any) => {
   });
 };
 
+router.get("/", (req: Request, res: Response) => {
+  res.send("Hello, this is your Express server!");
+});
+
 router.post("/register", async (req, res) => {
-  const { email, password } = req.body;
+  const {
+    email,
+    password,
+    name,
+    nationality,
+    city,
+    address,
+    state,
+    phone_number,
+  } = req.body;
 
   try {
     const hashedPassword = await hashPassword(password);
@@ -36,10 +50,16 @@ router.post("/register", async (req, res) => {
       data: {
         email,
         password: hashedPassword,
+        name,
+        nationality,
+        city,
+        address,
+        state,
+        phone_number,
       },
     });
 
-    res.status(200);
+    res.status(201);
     res.json(user);
   } catch (error) {
     console.error(error);

@@ -1,18 +1,17 @@
 import express, { Express, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import cors from "cors";
+import { Router } from "express";
+import { prisma } from "..";
+const router = Router();
+router.get('/', (req: Request, res: Response) => {
+  res.send('Hello, this is your Express server!');
+});
 
-const app: Express = express();
-const prisma = new PrismaClient();
-
-app.use(express.json());
-app.use(cors());
-
-app.post('/addData', async (req: Request, res: Response) => {
+router.post('/addData', async (req: Request, res: Response) => {
   try {
     const {
       name,
-      gender,
       nationality,
       city,
       address,
@@ -22,7 +21,6 @@ app.post('/addData', async (req: Request, res: Response) => {
       password
     }: {
       name: string;
-      gender: string;
       nationality: string;
       city: string;
       address: string;
@@ -52,8 +50,3 @@ app.post('/addData', async (req: Request, res: Response) => {
   }
 });
 
-// Start the server
-const PORT: number | string = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
