@@ -31,11 +31,12 @@ export const verifyToken = (req: any, res: any, next: any) => {
   
 };
 
-router.get("/", verifyToken, async(req: any, res:any) => {
-  const {id}=req.user.userId;
+router.get("/viewprofile", verifyToken, async(req: any, res:any) => {
+  const id=req.user.userId;
+  console.log("working");
   try {
     const user = await prisma.user.findUnique({
-      where: {id: id},
+      where: {id},
     });
 
     res.status(200).json(user);
@@ -102,9 +103,6 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET!,
-      {
-        expiresIn: "1h",
-      }
     );
 
     res.status(200);
