@@ -13,6 +13,7 @@ const verifyPassword = (password: string, hashedPassword: string) =>
 
 export const verifyToken = (req: any, res: any, next: any) => {
   const token = req.headers.authorization;
+  console.log(token);
 
   if (!token) {
     return res.status(401).json({ error: "Unauthorized" });
@@ -22,13 +23,26 @@ export const verifyToken = (req: any, res: any, next: any) => {
     if (err) {
       return res.status(403).json({ error: "Invalid token" });
     }
+    console.log(user);
     req.user = user;
+    console.log('user', req.user)
     next();
   });
+  
 };
 
-router.get("/", (req: Request, res: Response) => {
-  res.send("Hello, this is your Express server!");
+router.get("/", verifyToken, async(req: any, res:any) => {
+  const {id}=req.user.userId;
+  try {
+    const user = await prisma.user.findUnique({
+      where: {id: id},
+    });
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 router.post("/register", async (req, res) => {
@@ -72,7 +86,7 @@ router.post("/login", async (req, res) => {
 
   try {
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: { email},
     });
 
     if (!user) {
@@ -86,7 +100,7 @@ router.post("/login", async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: user.id },
       process.env.JWT_SECRET!,
       {
         expiresIn: "1h",
@@ -99,6 +113,35 @@ router.post("/login", async (req, res) => {
     console.error(error);
     res.status(500).json({ error: "Server error" });
   }
+}
+
+);
+router.post("/update", verifyToken, async (req : any,res:any)=>{
+  const data = req.body;
+  console.log(data)
+  const Id=req.user.userId;
+  console.log(Id)
+
+  try {
+    var hash_Password;
+  
+    if (req.body.password){
+      hash_Password = await hashPassword(req.body.password);
+    }
+    const user = await prisma.user.update({
+      where: {id:Id},
+      data: {
+        ...data,
+        password : hash_Password,
+      },
+  });
+
+  res.status(200).send(user)
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
 });
+
 
 export default router;
