@@ -56,7 +56,10 @@ router.post("/register", async (req, res) => {
     address,
     state,
     phone_number,
+    dob
   } = req.body;
+
+  var date = new Date(dob)
 
   try {
     const hashedPassword = await hashPassword(password);
@@ -71,11 +74,17 @@ router.post("/register", async (req, res) => {
         address,
         state,
         phone_number,
+        dob : date
       },
     });
+    console.log(user);
+    const token = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_SECRET!,
+    );
 
-    res.status(201);
-    res.json(user);
+    res.status(200);
+    res.json({ token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "User registration failed" });
@@ -83,6 +92,7 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
+  console.log(req.body)
   const { email, password } = req.body;
 
   try {
