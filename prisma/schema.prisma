@@ -21,4 +21,14 @@ model User {
   state        String
   phone_number String
   dob          DateTime?
+  trips        Trips[]
+}
+
+model Trips {
+  id          String   @id @default(uuid())
+  source      String
+  destination String
+  time        DateTime @default(now())
+  user        User?    @relation(fields: [userId], references: [id])
+  userId      String?
 }

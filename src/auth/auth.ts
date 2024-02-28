@@ -131,13 +131,18 @@ router.post("/update", verifyToken, async (req : any,res:any)=>{
   const Id=req.user.userId;
   console.log(Id)
   var date = new Date(data.dob);
-
   try {
     var hash_Password;
   
     if (req.body.password){
       hash_Password = await hashPassword(req.body.password);
     }
+
+    Object.entries(data).forEach( ([key,value])=> {
+      if (value===""||null && key!='password'){
+        data[key]=undefined;
+      }
+    });
     const user = await prisma.user.update({
       where: {id:Id},
       data: {
@@ -145,9 +150,51 @@ router.post("/update", verifyToken, async (req : any,res:any)=>{
         password : hash_Password,
         dob: date
       },
+
+
   });
 
   res.status(200).send(user)
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+router.post("/addtrips", verifyToken,async (req, res) => {
+  const {
+    source,
+    destination,
+  } = req.body;
+
+
+  try {
+    // const hashedPassword = await hashPassword(password);
+
+    const trip = await prisma.trips.create({
+      data: {
+      source:source,
+    destination:destination,
+      },
+    });
+    console.log(trip);
+    res.status(200);
+    res.json({ trip});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to add trip" });
+  }
+});
+
+router.get("/usertrip", verifyToken, async(req: any, res:any) => {
+  const id=req.trip.userId;
+  console.log("working");
+  try {
+    const trip = await prisma.trips.findUnique({
+      where: {id},
+    });
+
+    res.status(200).json(trip);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
