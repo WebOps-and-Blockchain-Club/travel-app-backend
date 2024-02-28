@@ -125,10 +125,12 @@ router.post("/login", async (req, res) => {
 
 );
 router.post("/update", verifyToken, async (req : any,res:any)=>{
+  console.log("Updating");
   const data = req.body;
   console.log(data)
   const Id=req.user.userId;
   console.log(Id)
+  var date = new Date(data.dob);
 
   try {
     var hash_Password;
@@ -141,6 +143,7 @@ router.post("/update", verifyToken, async (req : any,res:any)=>{
       data: {
         ...data,
         password : hash_Password,
+        dob: date
       },
   });
 
