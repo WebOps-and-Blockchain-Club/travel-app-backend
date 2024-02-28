@@ -161,7 +161,7 @@ router.post("/update", verifyToken, async (req : any,res:any)=>{
   }
 });
 
-router.post("/addtrips", verifyToken,async (req, res) => {
+router.post("/addtrips", verifyToken,async (req : any, res : any) => {
   const {
     source,
     destination,
@@ -175,6 +175,9 @@ router.post("/addtrips", verifyToken,async (req, res) => {
       data: {
       source:source,
     destination:destination,
+    user : {
+      connect : {id : req.user.userId}
+    }
       },
     });
     console.log(trip);
@@ -190,11 +193,13 @@ router.get("/usertrip", verifyToken, async(req: any, res:any) => {
   const id=req.trip.userId;
   console.log("working");
   try {
-    const trip = await prisma.trips.findUnique({
-      where: {id},
-    });
+    const trips = await prisma.trips.findMany({
+      where : {
+        userId : id
+      },
+    })
 
-    res.status(200).json(trip);
+    res.status(200).json(trips);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
