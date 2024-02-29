@@ -190,7 +190,7 @@ router.post("/addtrips", verifyToken,async (req : any, res : any) => {
 });
 
 router.get("/usertrip", verifyToken, async(req: any, res:any) => {
-  const id=req.trip.userId;
+  const id=req.user.userId;
   console.log("working");
   try {
     const trips = await prisma.trips.findMany({
