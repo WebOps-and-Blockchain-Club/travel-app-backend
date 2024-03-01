@@ -7,6 +7,8 @@ import { prisma } from "..";
 const router = Router();
 
 
+let graph: Record<string, unknown> = {};
+
 
 router.post("/getroute", async (req, res) => {
   // const {
@@ -21,14 +23,15 @@ router.post("/getroute", async (req, res) => {
 
 
    const requestData = req.body;
+   graph = req.body;
   
    
    res.send('POST request received successfully');
 
-  console.log(requestData)
+  console.log(requestData);
 
 });
 
-
+console.log("yo0ooo",graph);
 
 export default router;

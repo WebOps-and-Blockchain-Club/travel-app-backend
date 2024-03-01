@@ -21,7 +21,7 @@ router.post('/search_flights', (req: Request, res: Response) => {
 
 
   getJson({
-    api_key: "ffa7bbd869cbd84e84c77d80b8d322fc9caaf5fbabb10eb171e9e256fa6b71a9",
+    api_key: "ccf44f5ad3d6241cce48f9da6fcdba945376e3bc1dd623d4193a51527702962a",
     engine: "google_flights",
     departure_id,
     arrival_id,
